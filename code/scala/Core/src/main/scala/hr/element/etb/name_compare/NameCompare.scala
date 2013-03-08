@@ -51,28 +51,32 @@ case class NameCompare private(
       val _src = src.processed
       val _dst = dst.processed
 
-      val names = _src split " " toList
+      if(_dst.size < 1 || _src.size < 1) {
+        0.0f
+      }
+      else {
 
-     names.map{ name =>
-        val perms = (name.head + "." :: names.diff(List(name))).permutations toList
+        val names = _src split " " toList
 
-        perms.map{ p =>
-          val permName = p mkString " "
-          new Levenshtein getSimilarity(permName, _dst)
+       names.map{ name =>
+          val perms = (name.head + "." :: names.diff(List(name))).permutations toList
+
+          perms.map{ p =>
+            val permName = p mkString " "
+            new Levenshtein getSimilarity(permName, _dst)
+          }.max
         }.max
-      }.max
+      }
     }
 
     lazy val hyphenPercentage = {
       val _src = src.processed
       val _dst = dst.processed
 
-      if(!_dst.contains('-'))
-      {
+      if(!_dst.contains('-')) {
         0.0f
       }
-      else
-      {
+      else {
         val names = _dst replace ('-', ' ')
         val namesList = names split ' ' toList
 
